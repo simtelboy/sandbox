@@ -369,7 +369,7 @@ if (-not $useLocalKiro) {
     Write-Progress -Activity "Installation Progress" -Status "Downloading kiro.exe..." -PercentComplete 80
 
     # 从 GitHub Release 下载
-    $downloadUrl = "https://github.com/simtelboy/sandbox/releases/download/202507232058-Kiro-win32-x64/202507232058-Kiro-win32-x64.exe"
+    $downloadUrl = "https://github.com/simtelboy/sandbox/releases/download/202507232058-Kiro-win32-x64/kiro.exe"
 
     Write-Host "📡 从 GitHub 下载 kiro.exe..." -ForegroundColor Cyan
     Write-Host "🔗 Download URL: $downloadUrl" -ForegroundColor Cyan
