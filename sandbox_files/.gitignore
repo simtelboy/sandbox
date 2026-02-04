@@ -10,7 +10,7 @@ __pycache__/
 
 # 构建文件
 build/
-dist/
+# dist/ - 注释掉，因为 dist 目录包含重要的 exe 程序
 *.spec
 
 # 测试文件
