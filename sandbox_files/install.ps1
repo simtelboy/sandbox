@@ -434,71 +434,20 @@ Write-Progress -Activity "Installation Progress" -Status "Installing kiro.exe...
 Write-Host "[4/4] 🚀 启动 kiro.exe 安装程序..." -ForegroundColor Yellow
 "启动 kiro.exe 安装程序" | Add-Content -Path $logPath -Encoding UTF8 -ErrorAction SilentlyContinue
 
-# 尝试静默安装（常见参数：--silent, /S, /SILENT）
-Write-Host "🔇 尝试静默安装 Kiro..." -ForegroundColor Cyan
-$silentInstallSuccess = $false
+# 启动 Kiro 安装程序
+$process = Start-Process -FilePath $kiroPath -PassThru -NoNewWindow
+Write-Host "kiro Installer Started (PID: $($process.Id))" -ForegroundColor Cyan
 
-# 尝试 1: --silent (Electron Builder 常用)
-try {
-    Write-Host "  📝 尝试参数: --silent" -ForegroundColor Gray
-    $process = Start-Process -FilePath $kiroPath -ArgumentList "--silent" -Wait -PassThru -NoNewWindow -ErrorAction Stop
-    if ($process.ExitCode -eq 0) {
-        Write-Host "  ✅ 静默安装成功 (--silent)" -ForegroundColor Green
-        $silentInstallSuccess = $true
+# 使用 Python 自动化脚本完成安装
+if (Test-Path "C:\sandbox_files\automate_kiro.py") {
+    Write-Host "[4/4] 🤖 运行 kiro 自动化脚本..." -ForegroundColor Yellow
+    if ($useCachedPython) {
+        & $cachedPythonPath "C:\sandbox_files\automate_kiro.py"
+    } else {
+        & python "C:\sandbox_files\automate_kiro.py"
     }
-} catch {
-    Write-Host "  ❌ --silent 参数失败" -ForegroundColor Yellow
-}
-
-# 尝试 2: /S (NSIS 风格)
-if (-not $silentInstallSuccess) {
-    try {
-        Write-Host "  📝 尝试参数: /S" -ForegroundColor Gray
-        $process = Start-Process -FilePath $kiroPath -ArgumentList "/S" -Wait -PassThru -NoNewWindow -ErrorAction Stop
-        if ($process.ExitCode -eq 0) {
-            Write-Host "  ✅ 静默安装成功 (/S)" -ForegroundColor Green
-            $silentInstallSuccess = $true
-        }
-    } catch {
-        Write-Host "  ❌ /S 参数失败" -ForegroundColor Yellow
-    }
-}
-
-# 尝试 3: /VERYSILENT (Inno Setup 风格)
-if (-not $silentInstallSuccess) {
-    try {
-        Write-Host "  📝 尝试参数: /VERYSILENT" -ForegroundColor Gray
-        $process = Start-Process -FilePath $kiroPath -ArgumentList "/VERYSILENT" -Wait -PassThru -NoNewWindow -ErrorAction Stop
-        if ($process.ExitCode -eq 0) {
-            Write-Host "  ✅ 静默安装成功 (/VERYSILENT)" -ForegroundColor Green
-            $silentInstallSuccess = $true
-        }
-    } catch {
-        Write-Host "  ❌ /VERYSILENT 参数失败" -ForegroundColor Yellow
-    }
-}
-
-# 如果静默安装都失败，回退到自动化脚本
-if (-not $silentInstallSuccess) {
-    Write-Host "⚠️  静默安装失败，使用自动化脚本..." -ForegroundColor Yellow
-    "静默安装失败，回退到自动化脚本" | Add-Content -Path $logPath -Encoding UTF8 -ErrorAction SilentlyContinue
-
-    $process = Start-Process -FilePath $kiroPath -PassThru -NoNewWindow
-    Write-Host "kiro Installer Started (PID: $($process.Id))" -ForegroundColor Cyan
-
-    if (Test-Path "C:\sandbox_files\automate_kiro.py") {
-        Write-Host "[4/4] 🤖 运行 kiro 自动化脚本..." -ForegroundColor Yellow
-        if ($useCachedPython) {
-            & $cachedPythonPath "C:\sandbox_files\automate_kiro.py"
-        } else {
-            & python "C:\sandbox_files\automate_kiro.py"
-        }
-        Write-Host "✅ 自动化脚本执行完成" -ForegroundColor Green
-        "自动化脚本执行完成" | Add-Content -Path $logPath -Encoding UTF8 -ErrorAction SilentlyContinue
-    }
-} else {
-    Write-Host "✅ Kiro 静默安装完成，无需自动化脚本！" -ForegroundColor Green
-    "Kiro 静默安装成功" | Add-Content -Path $logPath -Encoding UTF8 -ErrorAction SilentlyContinue
+    Write-Host "✅ 自动化脚本执行完成" -ForegroundColor Green
+    "自动化脚本执行完成" | Add-Content -Path $logPath -Encoding UTF8 -ErrorAction SilentlyContinue
 }
 
 # 等待主程序启动
