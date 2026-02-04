@@ -25,7 +25,7 @@ $logPath = "C:\sandbox_files\install_log.txt"
 Write-Host "`n`n=========================================" -ForegroundColor Blue
 Write-Host "       Installation Script Running...     " -ForegroundColor Blue
 Write-Host "=========================================`n" -ForegroundColor Blue
-"头部显示完成" | Add-Content -Path $logPath -Encoding UTF8
+"头部显示完成" | Add-Content -Path $logPath -Encoding UTF8 -ErrorAction SilentlyContinue
 
 # 进度初始化
 Write-Progress -Activity "Installation Progress" -Status "Initializing..." -PercentComplete 0
@@ -33,7 +33,7 @@ Write-Progress -Activity "Installation Progress" -Status "Initializing..." -Perc
 # 1. 生成硬件指纹
 Write-Progress -Activity "Installation Progress" -Status "Generating Hardware Fingerprints..." -PercentComplete 10
 Write-Host "[1/7] Generating Random Hardware Fingerprints..." -ForegroundColor Yellow
-"[1/7] 生成硬件指纹" | Add-Content -Path $logPath -Encoding UTF8
+"[1/7] 生成硬件指纹" | Add-Content -Path $logPath -Encoding UTF8 -ErrorAction SilentlyContinue
 
 $random = {
     param($min, $max)
@@ -176,11 +176,11 @@ $jsonPath = "C:\sandbox_files\config.json"
 $jsonContent = $hardwareFingerprints | ConvertTo-Json -Depth 3
 [System.IO.File]::WriteAllText($jsonPath, $jsonContent, [System.Text.UTF8Encoding]::new($false))
 Write-Host "config.json Generated: $jsonPath" -ForegroundColor Green
-"配置.json 生成完成: $jsonPath" | Add-Content -Path $logPath -Encoding UTF8
+"配置.json 生成完成: $jsonPath" | Add-Content -Path $logPath -Encoding UTF8 -ErrorAction SilentlyContinue
 
 # 导入指纹到系统
 Write-Host "[1/7] Applying Fingerprints to System (Simulating Random Hardware, Skipping MAC Apply)..." -ForegroundColor Yellow
-"应用指纹到系统" | Add-Content -Path $logPath -Encoding UTF8
+"应用指纹到系统" | Add-Content -Path $logPath -Encoding UTF8 -ErrorAction SilentlyContinue
 
 try {
     Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Cryptography" -Name "MachineGuid" -Value $hardwareFingerprints.System_UUID -Force -ErrorAction Stop
@@ -207,13 +207,13 @@ try {
 
 } catch {
     Write-Host "Warning: Some Fingerprint Applications Failed: $($_.Exception.Message)" -ForegroundColor Yellow
-    "指纹应用失败: $($_.Exception.Message)" | Add-Content -Path $logPath -Encoding UTF8
+    "指纹应用失败: $($_.Exception.Message)" | Add-Content -Path $logPath -Encoding UTF8 -ErrorAction SilentlyContinue
 }
 
 # 2. 智能检测固化 Python 环境
 Write-Progress -Activity "Installation Progress" -Status "Checking Python Environment..." -PercentComplete 25
 Write-Host "[2/7] 🔍 检查 Python 环境..." -ForegroundColor Yellow
-"[2/7] 检查 Python 环境" | Add-Content -Path $logPath -Encoding UTF8
+"[2/7] 检查 Python 环境" | Add-Content -Path $logPath -Encoding UTF8 -ErrorAction SilentlyContinue
 
 # 首先检查是否有固化的 Python 环境
 $cachedPythonPath = "C:\python_env\python.exe"
@@ -221,7 +221,7 @@ $useCachedPython = $false
 
 if (Test-Path $cachedPythonPath) {
     Write-Host "✅ 发现固化 Python 环境!" -ForegroundColor Green
-    "发现固化 Python 环境: $cachedPythonPath" | Add-Content -Path $logPath -Encoding UTF8
+    "发现固化 Python 环境: $cachedPythonPath" | Add-Content -Path $logPath -Encoding UTF8 -ErrorAction SilentlyContinue
 
     # 验证固化环境的完整性
     try {
@@ -236,19 +236,19 @@ if (Test-Path $cachedPythonPath) {
         $libTest = & $cachedPythonPath -c "import pywinauto, selenium, requests; print('OK')" 2>$null
         if ($libTest -eq "OK") {
             Write-Host "✅ 固化环境库验证成功，跳过 Python 安装!" -ForegroundColor Green
-            "固化环境验证成功，跳过安装" | Add-Content -Path $logPath -Encoding UTF8
+            "固化环境验证成功，跳过安装" | Add-Content -Path $logPath -Encoding UTF8 -ErrorAction SilentlyContinue
             $useCachedPython = $true
         } else {
             Write-Host "⚠️  固化环境库验证失败，回退到传统安装" -ForegroundColor Yellow
-            "固化环境库验证失败: $libTest" | Add-Content -Path $logPath -Encoding UTF8
+            "固化环境库验证失败: $libTest" | Add-Content -Path $logPath -Encoding UTF8 -ErrorAction SilentlyContinue
         }
     } catch {
         Write-Host "⚠️  固化环境验证异常，回退到传统安装: $($_.Exception.Message)" -ForegroundColor Yellow
-        "固化环境验证异常: $($_.Exception.Message)" | Add-Content -Path $logPath -Encoding UTF8
+        "固化环境验证异常: $($_.Exception.Message)" | Add-Content -Path $logPath -Encoding UTF8 -ErrorAction SilentlyContinue
     }
 } else {
     Write-Host "❌ 未发现固化 Python 环境，使用传统安装模式" -ForegroundColor Yellow
-    "未发现固化环境，使用传统模式" | Add-Content -Path $logPath -Encoding UTF8
+    "未发现固化环境，使用传统模式" | Add-Content -Path $logPath -Encoding UTF8 -ErrorAction SilentlyContinue
 }
 
 # 如果使用固化环境，跳过 Python 安装步骤
@@ -258,7 +258,7 @@ if ($useCachedPython) {
     Write-Host "[4/7] ⚡ 使用固化库环境 (跳过安装)" -ForegroundColor Green
     Write-Host "[5/7] ⚡ 使用固化库环境 (跳过安装)" -ForegroundColor Green
     Write-Host "[6/7] ⚡ 使用固化库环境 (跳过安装)" -ForegroundColor Green
-    "使用固化环境，跳过所有 Python 相关安装" | Add-Content -Path $logPath -Encoding UTF8
+    "使用固化环境，跳过所有 Python 相关安装" | Add-Content -Path $logPath -Encoding UTF8 -ErrorAction SilentlyContinue
 
     # 直接跳转到 kiro.exe 安装
     $pythonVersion = & $cachedPythonPath --version 2>&1
@@ -267,7 +267,7 @@ if ($useCachedPython) {
     Write-Host "❌ 错误: 未找到固化 Python 环境!" -ForegroundColor Red
     Write-Host "💡 请确保主机已正确配置固化环境" -ForegroundColor Yellow
     Write-Host "💡 运行主机的 start_sandbox.ps1 会自动创建固化环境" -ForegroundColor Yellow
-    "未找到固化环境，退出安装" | Add-Content -Path $logPath -Encoding UTF8
+    "未找到固化环境，退出安装" | Add-Content -Path $logPath -Encoding UTF8 -ErrorAction SilentlyContinue
     Write-Host "`n按任意键退出..." -ForegroundColor Gray
     $null = $Host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
     exit 1
@@ -276,7 +276,7 @@ if ($useCachedPython) {
 # 2.5. 检查并安装 VirtualBrowser（固化）
 Write-Progress -Activity "Installation Progress" -Status "Checking VirtualBrowser..." -PercentComplete 65
 Write-Host "[2.5/4] 🌐 检查 VirtualBrowser..." -ForegroundColor Yellow
-"[2.5/4] 检查 VirtualBrowser" | Add-Content -Path $logPath -Encoding UTF8
+"[2.5/4] 检查 VirtualBrowser" | Add-Content -Path $logPath -Encoding UTF8 -ErrorAction SilentlyContinue
 
 $vbInstallPath = "C:\Program"
 $vbExePath = "$vbInstallPath\VirtualBrowser.exe"
@@ -285,10 +285,10 @@ $vbExePath = "$vbInstallPath\VirtualBrowser.exe"
 if (Test-Path $vbExePath) {
     $fileSize = [math]::Round((Get-Item $vbExePath).Length / 1MB, 2)
     Write-Host "✅ VirtualBrowser 已固化 (Size: ${fileSize} MB)" -ForegroundColor Green
-    "VirtualBrowser 已固化，跳过安装" | Add-Content -Path $logPath -Encoding UTF8
+    "VirtualBrowser 已固化，跳过安装" | Add-Content -Path $logPath -Encoding UTF8 -ErrorAction SilentlyContinue
 } else {
     Write-Host "📥 VirtualBrowser 未安装，开始下载并安装..." -ForegroundColor Yellow
-    "VirtualBrowser 未安装，开始下载" | Add-Content -Path $logPath -Encoding UTF8
+    "VirtualBrowser 未安装，开始下载" | Add-Content -Path $logPath -Encoding UTF8 -ErrorAction SilentlyContinue
 
     # 从 sandbox_files 检查是否有安装包
     $vbSetupPath = "C:\sandbox_files\VirtualBrowser.Setup.2.2.14.exe"
@@ -302,10 +302,10 @@ if (Test-Path $vbExePath) {
             $ProgressPreference = 'SilentlyContinue'
             Invoke-WebRequest -Uri $vbDownloadUrl -OutFile $vbSetupPath -UseBasicParsing -TimeoutSec 600
             Write-Host "✅ VirtualBrowser 安装包下载完成" -ForegroundColor Green
-            "VirtualBrowser 下载成功" | Add-Content -Path $logPath -Encoding UTF8
+            "VirtualBrowser 下载成功" | Add-Content -Path $logPath -Encoding UTF8 -ErrorAction SilentlyContinue
         } catch {
             Write-Host "❌ VirtualBrowser 下载失败: $($_.Exception.Message)" -ForegroundColor Red
-            "VirtualBrowser 下载失败: $($_.Exception.Message)" | Add-Content -Path $logPath -Encoding UTF8
+            "VirtualBrowser 下载失败: $($_.Exception.Message)" | Add-Content -Path $logPath -Encoding UTF8 -ErrorAction SilentlyContinue
             Write-Host ""
             Write-Host "💡 VirtualBrowser 可以稍后手动安装：" -ForegroundColor Yellow
             Write-Host "   1. 访问 VirtualBrowser 官网下载安装包" -ForegroundColor Gray
@@ -326,14 +326,14 @@ if (Test-Path $vbExePath) {
             # 验证安装
             if (Test-Path $vbExePath) {
                 Write-Host "✅ VirtualBrowser 安装成功并已固化！" -ForegroundColor Green
-                "VirtualBrowser 安装成功" | Add-Content -Path $logPath -Encoding UTF8
+                "VirtualBrowser 安装成功" | Add-Content -Path $logPath -Encoding UTF8 -ErrorAction SilentlyContinue
             } else {
                 Write-Host "⚠️ VirtualBrowser 安装可能未完成" -ForegroundColor Yellow
-                "VirtualBrowser 安装验证失败" | Add-Content -Path $logPath -Encoding UTF8
+                "VirtualBrowser 安装验证失败" | Add-Content -Path $logPath -Encoding UTF8 -ErrorAction SilentlyContinue
             }
         } catch {
             Write-Host "❌ VirtualBrowser 安装失败: $($_.Exception.Message)" -ForegroundColor Red
-            "VirtualBrowser 安装失败: $($_.Exception.Message)" | Add-Content -Path $logPath -Encoding UTF8
+            "VirtualBrowser 安装失败: $($_.Exception.Message)" | Add-Content -Path $logPath -Encoding UTF8 -ErrorAction SilentlyContinue
         }
     }
 }
@@ -341,7 +341,7 @@ if (Test-Path $vbExePath) {
 # 3. 检查并获取 kiro.exe
 Write-Progress -Activity "Installation Progress" -Status "Checking kiro.exe..." -PercentComplete 70
 Write-Host "[3/4] 📥 检查 kiro.exe..." -ForegroundColor Yellow
-"[3/4] 检查 kiro.exe" | Add-Content -Path $logPath -Encoding UTF8
+"[3/4] 检查 kiro.exe" | Add-Content -Path $logPath -Encoding UTF8 -ErrorAction SilentlyContinue
 
 $kiroPath = "C:\sandbox_files\kiro.exe"
 $useLocalKiro = $false
@@ -351,17 +351,17 @@ if (Test-Path $kiroPath) {
     $fileSize = [math]::Round((Get-Item $kiroPath).Length / 1MB, 2)
     if ($fileSize -gt 10) {  # kiro.exe 应该大于 10MB
         Write-Host "✅ Found local kiro.exe (Size: ${fileSize} MB)" -ForegroundColor Green
-        "使用本地 kiro.exe: ${fileSize} MB" | Add-Content -Path $logPath -Encoding UTF8
+        "使用本地 kiro.exe: ${fileSize} MB" | Add-Content -Path $logPath -Encoding UTF8 -ErrorAction SilentlyContinue
         $useLocalKiro = $true
     } else {
         Write-Host "⚠️ Local kiro.exe too small (${fileSize} MB), will download from web..." -ForegroundColor Yellow
-        "本地文件过小，将重新下载" | Add-Content -Path $logPath -Encoding UTF8
+        "本地文件过小，将重新下载" | Add-Content -Path $logPath -Encoding UTF8 -ErrorAction SilentlyContinue
         # 删除无效的本地文件
         Remove-Item $kiroPath -Force -ErrorAction SilentlyContinue
     }
 } else {
     Write-Host "❌ Local kiro.exe not found, will download from official API..." -ForegroundColor Yellow
-    "本地未找到 kiro.exe，从官方 API 下载" | Add-Content -Path $logPath -Encoding UTF8
+    "本地未找到 kiro.exe，从官方 API 下载" | Add-Content -Path $logPath -Encoding UTF8 -ErrorAction SilentlyContinue
 }
 
 # 步骤2: 如果本地没有有效文件，从 GitHub 下载
@@ -373,7 +373,7 @@ if (-not $useLocalKiro) {
 
     Write-Host "📡 从 GitHub 下载 kiro.exe..." -ForegroundColor Cyan
     Write-Host "🔗 Download URL: $downloadUrl" -ForegroundColor Cyan
-    "从 GitHub 下载 kiro.exe" | Add-Content -Path $logPath -Encoding UTF8
+    "从 GitHub 下载 kiro.exe" | Add-Content -Path $logPath -Encoding UTF8 -ErrorAction SilentlyContinue
 
     # 下载 kiro.exe
     Write-Host "⬇️ Downloading kiro.exe..." -ForegroundColor Yellow
@@ -395,7 +395,7 @@ if (-not $useLocalKiro) {
                     $fileSize = [math]::Round((Get-Item $kiroPath).Length / 1MB, 2)
                     if ($fileSize -gt 10) {
                         Write-Host "  ✅ kiro.exe downloaded successfully! (Size: ${fileSize} MB)" -ForegroundColor Green
-                        "kiro.exe 下载成功: ${fileSize} MB" | Add-Content -Path $logPath -Encoding UTF8
+                        "kiro.exe 下载成功: ${fileSize} MB" | Add-Content -Path $logPath -Encoding UTF8 -ErrorAction SilentlyContinue
                         $downloadSuccess = $true
                     } else {
                         throw "Downloaded file too small (${fileSize} MB)"
@@ -405,7 +405,7 @@ if (-not $useLocalKiro) {
                 }
             } catch {
                 Write-Host "  ❌ Download failed: $($_.Exception.Message)" -ForegroundColor Red
-                "下载失败 [尝试 $attempt]: $($_.Exception.Message)" | Add-Content -Path $logPath -Encoding UTF8
+                "下载失败 [尝试 $attempt]: $($_.Exception.Message)" | Add-Content -Path $logPath -Encoding UTF8 -ErrorAction SilentlyContinue
 
                 # 清理失败的下载文件
                 if (Test-Path $kiroPath) {
@@ -422,7 +422,7 @@ if (-not $useLocalKiro) {
     # 检查最终下载结果
     if (-not $downloadSuccess) {
         Write-Host "❌ ERROR: Failed to download kiro.exe after $maxAttempts attempts!" -ForegroundColor Red
-        "kiro.exe 下载最终失败" | Add-Content -Path $logPath -Encoding UTF8
+        "kiro.exe 下载最终失败" | Add-Content -Path $logPath -Encoding UTF8 -ErrorAction SilentlyContinue
         Write-Host "`nPress Any Key to Exit..." -ForegroundColor Gray
         $null = $Host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
         exit 1
@@ -432,7 +432,7 @@ if (-not $useLocalKiro) {
 # 安装 kiro.exe
 Write-Progress -Activity "Installation Progress" -Status "Installing kiro.exe..." -PercentComplete 90
 Write-Host "[4/4] 🚀 启动 kiro.exe 安装程序..." -ForegroundColor Yellow
-"启动 kiro.exe 安装程序" | Add-Content -Path $logPath -Encoding UTF8
+"启动 kiro.exe 安装程序" | Add-Content -Path $logPath -Encoding UTF8 -ErrorAction SilentlyContinue
 
 $process = Start-Process -FilePath $kiroPath -PassThru -NoNewWindow
 Write-Host "kiro Installer Started (PID: $($process.Id))" -ForegroundColor Cyan
@@ -445,7 +445,7 @@ if (Test-Path "C:\sandbox_files\automate_kiro.py") {
         & python "C:\sandbox_files\automate_kiro.py"
     }
     Write-Host "✅ 自动化脚本执行完成" -ForegroundColor Green
-    "自动化脚本执行完成" | Add-Content -Path $logPath -Encoding UTF8
+    "自动化脚本执行完成" | Add-Content -Path $logPath -Encoding UTF8 -ErrorAction SilentlyContinue
 }
 
 # 等待主程序启动
@@ -463,7 +463,7 @@ while ($elapsed -lt $timeout -and -not $kiroInstalled) {
 
     if ($kiroProcess) {
         Write-Host "Detected kiro Main Program Running! Installation Complete." -ForegroundColor Green
-        "kiro 主程序运行: PID $($kiroProcess.Id)" | Add-Content -Path $logPath -Encoding UTF8
+        "kiro 主程序运行: PID $($kiroProcess.Id)" | Add-Content -Path $logPath -Encoding UTF8 -ErrorAction SilentlyContinue
         $kiroInstalled = $true
         break
     }
@@ -485,7 +485,7 @@ Write-Progress -Activity "Installation Progress" -Status "Completed" -PercentCom
 Write-Host "`n`n=========================================" -ForegroundColor Green
 Write-Host "       All Installations Completed!       " -ForegroundColor Green
 Write-Host "=========================================`n" -ForegroundColor Green
-"安装完成: $(Get-Date)" | Add-Content -Path $logPath -Encoding UTF8
+"安装完成: $(Get-Date)" | Add-Content -Path $logPath -Encoding UTF8 -ErrorAction SilentlyContinue
 
 Write-Host "Tip: Open Command Prompt and Run 'python --version' to Verify" -ForegroundColor Cyan
 Write-Host "kiro.exe Installed to $env:LOCALAPPDATA\Programs\Kiro" -ForegroundColor Cyan
