@@ -296,7 +296,7 @@ if (Test-Path $vbExePath) {
     if (!(Test-Path $vbSetupPath)) {
         # 如果本地没有，从 GitHub 下载
         Write-Host "📡 从 GitHub 下载 VirtualBrowser 安装包..." -ForegroundColor Cyan
-        $vbDownloadUrl = "https://github.com/simtelboy/sandbox/releases/download/v1.0/VirtualBrowser.Setup.2.2.14.exe"
+        $vbDownloadUrl = "https://github.com/simtelboy/sandbox/releases/download/202507232058-Kiro-win32-x64/VirtualBrowser.Setup.2.2.14.exe"
 
         try {
             $ProgressPreference = 'SilentlyContinue'
@@ -306,6 +306,12 @@ if (Test-Path $vbExePath) {
         } catch {
             Write-Host "❌ VirtualBrowser 下载失败: $($_.Exception.Message)" -ForegroundColor Red
             "VirtualBrowser 下载失败: $($_.Exception.Message)" | Add-Content -Path $logPath -Encoding UTF8
+            Write-Host ""
+            Write-Host "💡 VirtualBrowser 可以稍后手动安装：" -ForegroundColor Yellow
+            Write-Host "   1. 访问 VirtualBrowser 官网下载安装包" -ForegroundColor Gray
+            Write-Host "   2. 安装到 C:\Program Files\VirtualBrowser\" -ForegroundColor Gray
+            Write-Host "   3. 下次运行沙盒时会自动使用固化的 VirtualBrowser" -ForegroundColor Gray
+            Write-Host ""
             Write-Host "⚠️ 跳过 VirtualBrowser 安装，继续..." -ForegroundColor Yellow
         }
     }
