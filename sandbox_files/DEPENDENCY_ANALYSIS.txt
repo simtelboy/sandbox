@@ -1,0 +1,143 @@
+========================================
+sandbox_files 完整依赖分析
+========================================
+
+【依赖关系图】
+--------------------
+install.ps1 (主入口)
+  └─> automate_kiro.py (Kiro 安装自动化)
+       └─> 提示用户可选运行: kiro_login_automation.py
+
+kiro_login_automation.py (可选，手动运行)
+  ├─> github_registration_automation.py
+  │    ├─> email_service.py
+  │    └─> web_automation_framework.py (未找到，可能缺失)
+  ├─> google_registration_automation.py
+  │    └─> web_automation_framework.py
+  ├─> aws_registration_automation.py
+  │    └─> web_automation_framework.py
+  └─> manual_registration_automation.py
+
+registration_info_generator.py (独立工具)
+  └─> email_service.py
+
+email_service.py (被多个脚本依赖)
+  └─> .env (配置文件)
+
+【必需文件 - 核心功能】
+--------------------
+✓ install.ps1                          - 沙盒安装主脚本
+✓ automate_kiro.py                     - Kiro 安装自动化（被 install.ps1 调用）
+✓ email_service.py                     - 邮件服务模块（被多个脚本依赖）
+✓ .env                                 - 配置文件（邮箱、登录方式等）
+✓ name.txt                             - 姓名列表
+✓ config.json                          - 硬件指纹配置（由 install.ps1 动态生成）
+
+【可选文件 - 扩展功能】
+--------------------
+如果需要自动登录和注册功能，保留以下文件：
+
+? kiro_login_automation.py             - Kiro 登录自动化（手动运行）
+? github_registration_automation.py    - GitHub 注册自动化
+? google_registration_automation.py    - Google 注册自动化
+? aws_registration_automation.py       - AWS 注册自动化
+? manual_registration_automation.py    - 手动注册自动化
+? web_automation_framework.py          - Web 自动化框架（被上述脚本依赖）
+
+独立工具（不在主流程中）：
+? registration_info_generator.py       - 注册信息生成器源代码
+? dist/RegistrationInfoGenerator_v2.exe - 编译后的注册信息生成器
+
+【必删文件 - 测试和构建】
+--------------------
+测试文件（10个）：
+✗ test_all_fixes.py
+✗ test_email_service.py
+✗ test_email_window.py
+✗ test_generator.py
+✗ test_password_9chars.py
+✗ test_path_fix.py
+✗ test_regex_match.py
+✗ test_simple.py
+✗ verify_fix.py
+✗ google_registration_automation.py.bak
+
+构建脚本（5个）：
+✗ build_exe.py
+✗ build_final_v2.py
+✗ build_fixed.py
+✗ simple_build.py
+✗ build_final.bat
+
+打包配置（2个）：
+✗ RegistrationInfoGenerator_v2.spec
+✗ 注册信息生成器.spec
+
+文档（已过时，4个）：
+✗ 打包指南.md
+✗ 修复总结.md
+✗ 修改总结_v2.md
+✗ framework_usage_guide.md (76KB，可选保留)
+
+临时/日志文件：
+✗ install_log.txt
+✗ 账号.txt (如果不需要保留已注册账号)
+✗ .env.example (示例文件，可选保留)
+✗ .gitignore (如果上传到 GitHub，建议保留)
+
+目录（构建缓存和测试）：
+✗ build/                               - PyInstaller 构建缓存
+✗ test/                                - 测试文件目录
+✗ 333/                                 - 临时测试文件
+✗ __pycache__/                         - Python 缓存
+
+【大型二进制文件 - 不上传到 GitHub】
+--------------------
+这些文件太大，不应上传到 GitHub，改为从官方下载：
+
+✗ kiro.exe (183MB)                     - 从官方 API 下载
+✗ python-3.12.7-amd64.exe (25MB)       - 从 python.org 下载
+✗ VirtualBrowser.Setup.2.2.14.exe (250MB) - 从 GitHub releases 下载
+✗ VirtualBrowser.Setup_github_2.2.14.exe (250MB)
+✗ VirtualBrowser.Setup_google_2.2.14.exe (250MB)
+✗ VirtualBrowser/ (整个目录)           - 程序文件
+✗ virtual-browser/ (整个目录)          - 配置文件
+
+【可选保留 - 根据需要】
+--------------------
+? OAuth/                               - OAuth 授权文件（如果有重要授权，建议备份）
+? README.md                            - 项目说明（建议保留）
+? README_独立工具.md                   - 独立工具说明
+
+【最终建议的文件列表】
+--------------------
+最小核心（仅安装 Kiro）：
+  install.ps1
+  automate_kiro.py
+  .env
+  name.txt
+
+完整功能（包含自动注册）：
+  install.ps1
+  automate_kiro.py
+  kiro_login_automation.py
+  github_registration_automation.py
+  google_registration_automation.py
+  aws_registration_automation.py
+  manual_registration_automation.py
+  web_automation_framework.py
+  email_service.py
+  .env
+  name.txt
+  README.md
+
+独立工具（可选）：
+  registration_info_generator.py
+  dist/RegistrationInfoGenerator_v2.exe
+  email_service.py
+  .env
+  name.txt
+
+========================================
+清理命令（将在下一步执行）
+========================================

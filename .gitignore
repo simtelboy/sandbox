@@ -1,0 +1,69 @@
+# Python 缓存文件
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# 虚拟环境（但保留 python_env 便携式环境）
+venv/
+ENV/
+env/
+
+# 排除大型安装文件（但保留 dist 目录中的 exe）
+python-*.exe
+kiro.exe
+
+# 排除 VirtualBrowser 大文件（超过 GitHub 100MB 限制）
+sandbox_files/VirtualBrowser/VirtualBrowser.exe
+sandbox_files/VirtualBrowser/VirtualBrowser/140.0.7339.186/chrome.dll
+sandbox_files/VirtualBrowser/resources/app.asar
+sandbox_files/VirtualBrowser/resources/app.asar.unpacked/
+
+# 排除日志文件
+*.log
+sandbox_files/*.log
+sandbox_files/install_log.txt
+
+# 排除临时文件
+*.tmp
+*.temp
+
+# 排除备份文件
+*副本*
+*-不带*
+sandbox_files/*副本*
+sandbox_files/*-不带*
+
+# 排除敏感配置文件
+sandbox_files/.env
+sandbox_files/OAuth/*.json
+
+# 排除IDE文件
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# 排除系统文件
+.DS_Store
+Thumbs.db
+
+# 排除压缩包
+*.rar
+*.zip
+
+# 排除旧版本
+old-version/
+
+# 排除 PyInstaller 构建文件
+build/
+*.spec
+
+# 但保留这些重要文件
+!sandbox_files/dist/
+!sandbox_files/dist/*.exe
+!sandbox_files/dist/*.txt
+!sandbox_files/name.txt
+!sandbox_files/*.md
+!*.md

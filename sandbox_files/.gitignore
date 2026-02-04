@@ -1,0 +1,52 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.so
+*.egg
+*.egg-info/
+
+# 构建文件
+build/
+dist/
+*.spec
+
+# 测试文件
+test_*.py
+verify_*.py
+
+# 临时文件
+*.log
+*.tmp
+install_log.txt
+CLEANUP_PLAN.txt
+
+# 大型二进制文件
+kiro.exe
+python-*.exe
+VirtualBrowser.Setup*.exe
+
+# 配置文件（包含敏感信息）
+.env
+
+# 账号信息（敏感）
+账号.txt
+
+# OAuth 授权文件（敏感）
+OAuth/
+
+# 缓存目录
+cache/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# 系统文件
+.DS_Store
+Thumbs.db
+desktop.ini
