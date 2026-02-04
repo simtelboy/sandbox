@@ -2249,7 +2249,7 @@ while ($true) {
     </MappedFolder>
     <MappedFolder>
       <HostFolder>$PSScriptRoot\VirtualBrowser</HostFolder>
-      <SandboxFolder>C:\Program Files\VirtualBrowser</SandboxFolder>
+      <SandboxFolder>C:\Program</SandboxFolder>
       <ReadOnly>false</ReadOnly>
     </MappedFolder>
   </MappedFolders>
@@ -2264,8 +2264,8 @@ while ($true) {
         # 创建VirtualBrowser快捷方式
         `$shortcutPath = `$desktopPath + '\VirtualBrowser.lnk'
         `$shortcut = `$shell.CreateShortcut(`$shortcutPath)
-        `$shortcut.TargetPath = 'C:\Program Files\VirtualBrowser\VirtualBrowser.exe'
-        `$shortcut.WorkingDirectory = 'C:\Program Files\VirtualBrowser'
+        `$shortcut.TargetPath = 'C:\Program\VirtualBrowser.exe'
+        `$shortcut.WorkingDirectory = 'C:\Program'
         `$shortcut.Description = 'VirtualBrowser - 虚拟浏览器'
         `$shortcut.Save()
         Write-Host '✅ VirtualBrowser桌面快捷方式已创建' -ForegroundColor Green
@@ -2288,7 +2288,7 @@ while ($true) {
 
       # 设置VirtualBrowser为默认浏览器
       try {
-        `$browserPath = 'C:\Program Files\VirtualBrowser\VirtualBrowser.exe'
+        `$browserPath = 'C:\Program\VirtualBrowser.exe'
         `$browserName = 'VirtualBrowser'
 
         Write-Host '🔧 正在设置VirtualBrowser为默认浏览器...' -ForegroundColor Cyan
@@ -2355,7 +2355,7 @@ while ($true) {
     </MappedFolder>
     <MappedFolder>
       <HostFolder>$PSScriptRoot\VirtualBrowser</HostFolder>
-      <SandboxFolder>C:\Program Files\VirtualBrowser</SandboxFolder>
+      <SandboxFolder>C:\Program</SandboxFolder>
       <ReadOnly>false</ReadOnly>
     </MappedFolder>
   </MappedFolders>
@@ -2370,8 +2370,8 @@ while ($true) {
         # 创建VirtualBrowser快捷方式
         `$shortcutPath = `$desktopPath + '\VirtualBrowser.lnk'
         `$shortcut = `$shell.CreateShortcut(`$shortcutPath)
-        `$shortcut.TargetPath = 'C:\Program Files\VirtualBrowser\VirtualBrowser.exe'
-        `$shortcut.WorkingDirectory = 'C:\Program Files\VirtualBrowser'
+        `$shortcut.TargetPath = 'C:\Program\VirtualBrowser.exe'
+        `$shortcut.WorkingDirectory = 'C:\Program'
         `$shortcut.Description = 'VirtualBrowser - 虚拟浏览器'
         `$shortcut.Save()
         Write-Host '✅ VirtualBrowser桌面快捷方式已创建' -ForegroundColor Green
@@ -2394,7 +2394,7 @@ while ($true) {
 
       # 设置VirtualBrowser为默认浏览器
       try {
-        `$browserPath = 'C:\Program Files\VirtualBrowser\VirtualBrowser.exe'
+        `$browserPath = 'C:\Program\VirtualBrowser.exe'
         `$browserName = 'VirtualBrowser'
 
         Write-Host '🔧 正在设置VirtualBrowser为默认浏览器...' -ForegroundColor Cyan

@@ -278,7 +278,7 @@ Write-Progress -Activity "Installation Progress" -Status "Checking VirtualBrowse
 Write-Host "[2.5/4] 🌐 检查 VirtualBrowser..." -ForegroundColor Yellow
 "[2.5/4] 检查 VirtualBrowser" | Add-Content -Path $logPath -Encoding UTF8
 
-$vbInstallPath = "C:\Program Files\VirtualBrowser"
+$vbInstallPath = "C:\Program"
 $vbExePath = "$vbInstallPath\VirtualBrowser.exe"
 
 # 检查 VirtualBrowser 是否已安装（固化）
@@ -309,7 +309,7 @@ if (Test-Path $vbExePath) {
             Write-Host ""
             Write-Host "💡 VirtualBrowser 可以稍后手动安装：" -ForegroundColor Yellow
             Write-Host "   1. 访问 VirtualBrowser 官网下载安装包" -ForegroundColor Gray
-            Write-Host "   2. 安装到 C:\Program Files\VirtualBrowser\" -ForegroundColor Gray
+            Write-Host "   2. 安装到 C:\Program\" -ForegroundColor Gray
             Write-Host "   3. 下次运行沙盒时会自动使用固化的 VirtualBrowser" -ForegroundColor Gray
             Write-Host ""
             Write-Host "⚠️ 跳过 VirtualBrowser 安装，继续..." -ForegroundColor Yellow
@@ -320,7 +320,7 @@ if (Test-Path $vbExePath) {
     if (Test-Path $vbSetupPath) {
         Write-Host "🚀 安装 VirtualBrowser 到固化目录..." -ForegroundColor Cyan
         try {
-            # 静默安装到指定目录
+            # 静默安装到指定目录（注意：/D 参数必须在最后，且路径不能有引号）
             Start-Process -FilePath $vbSetupPath -ArgumentList "/S", "/D=$vbInstallPath" -Wait -NoNewWindow
 
             # 验证安装
@@ -364,59 +364,33 @@ if (Test-Path $kiroPath) {
     "本地未找到 kiro.exe，从官方 API 下载" | Add-Content -Path $logPath -Encoding UTF8
 }
 
-# 步骤2: 如果本地没有有效文件，从官网下载
+# 步骤2: 如果本地没有有效文件，从 GitHub 下载
 if (-not $useLocalKiro) {
-    Write-Progress -Activity "Installation Progress" -Status "Fetching download URL..." -PercentComplete 87
+    Write-Progress -Activity "Installation Progress" -Status "Downloading kiro.exe..." -PercentComplete 80
 
-    # 从 JSON API 获取最新下载链接
-    $metadataUrl = "https://prod.download.desktop.kiro.dev/stable/metadata-win32-x64-user-stable.json"
-    $downloadUrl = $null
+    # 从 GitHub Release 下载
+    $downloadUrl = "https://github.com/simtelboy/sandbox/releases/download/202507232058-Kiro-win32-x64/202507232058-Kiro-win32-x64.exe"
 
-    try {
-        Write-Host "📡 Fetching metadata from official API..." -ForegroundColor Cyan
-        $response = Invoke-WebRequest -Uri $metadataUrl -UseBasicParsing -TimeoutSec 30 -ErrorAction Stop
-        $metadata = $response.Content | ConvertFrom-Json
-
-        # 解析 JSON 获取下载 URL
-        if ($metadata.releases -and $metadata.releases.Count -gt 0) {
-            $latestRelease = $metadata.releases[0]
-            if ($latestRelease.updateTo -and $latestRelease.updateTo.url) {
-                $downloadUrl = $latestRelease.updateTo.url
-                $version = $latestRelease.version
-                Write-Host "✅ Latest kiro version: $version" -ForegroundColor Green
-                Write-Host "🔗 Download URL: $downloadUrl" -ForegroundColor Cyan
-                "获取到最新版本: $version, URL: $downloadUrl" | Add-Content -Path $logPath -Encoding UTF8
-            } else {
-                throw "Invalid JSON structure: missing updateTo.url"
-            }
-        } else {
-            throw "Invalid JSON structure: missing releases array"
-        }
-    } catch {
-        Write-Host "❌ Failed to fetch metadata: $($_.Exception.Message)" -ForegroundColor Red
-        "获取元数据失败: $($_.Exception.Message)" | Add-Content -Path $logPath -Encoding UTF8
-        Write-Host "`nPress Any Key to Exit..." -ForegroundColor Gray
-        $null = $Host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
-        exit 1
-    }
+    Write-Host "📡 从 GitHub 下载 kiro.exe..." -ForegroundColor Cyan
+    Write-Host "🔗 Download URL: $downloadUrl" -ForegroundColor Cyan
+    "从 GitHub 下载 kiro.exe" | Add-Content -Path $logPath -Encoding UTF8
 
     # 下载 kiro.exe
-    if ($downloadUrl) {
-        Write-Progress -Activity "Installation Progress" -Status "Downloading kiro.exe..." -PercentComplete 80
-        Write-Host "⬇️ Downloading kiro.exe..." -ForegroundColor Yellow
+    Write-Host "⬇️ Downloading kiro.exe..." -ForegroundColor Yellow
 
-        $downloadSuccess = $false
-        $attempt = 0
-        $maxAttempts = 5
+    $downloadSuccess = $false
+    $attempt = 0
+    $maxAttempts = 5
 
-        while (-not $downloadSuccess -and $attempt -lt $maxAttempts) {
-            $attempt++
-            Write-Host "  📥 Download attempt ${attempt}/${maxAttempts}..." -ForegroundColor Cyan
+    while (-not $downloadSuccess -and $attempt -lt $maxAttempts) {
+        $attempt++
+        Write-Host "  📥 Download attempt ${attempt}/${maxAttempts}..." -ForegroundColor Cyan
 
-            try {
-                Invoke-WebRequest -Uri $downloadUrl -OutFile $kiroPath -UseBasicParsing -TimeoutSec 600 -ErrorAction Stop
+        try {
+            $ProgressPreference = 'SilentlyContinue'
+            Invoke-WebRequest -Uri $downloadUrl -OutFile $kiroPath -UseBasicParsing -TimeoutSec 600 -ErrorAction Stop
 
-                # 验证下载的文件
+            # 验证下载的文件
                 if (Test-Path $kiroPath) {
                     $fileSize = [math]::Round((Get-Item $kiroPath).Length / 1MB, 2)
                     if ($fileSize -gt 10) {
