@@ -419,14 +419,13 @@ if (-not $useLocalKiro) {
             }
         }
 
-        # 检查最终下载结果
-        if (-not $downloadSuccess) {
-            Write-Host "❌ ERROR: Failed to download kiro.exe after $maxAttempts attempts!" -ForegroundColor Red
-            "kiro.exe 下载最终失败" | Add-Content -Path $logPath -Encoding UTF8
-            Write-Host "`nPress Any Key to Exit..." -ForegroundColor Gray
-            $null = $Host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
-            exit 1
-        }
+    # 检查最终下载结果
+    if (-not $downloadSuccess) {
+        Write-Host "❌ ERROR: Failed to download kiro.exe after $maxAttempts attempts!" -ForegroundColor Red
+        "kiro.exe 下载最终失败" | Add-Content -Path $logPath -Encoding UTF8
+        Write-Host "`nPress Any Key to Exit..." -ForegroundColor Gray
+        $null = $Host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
+        exit 1
     }
 }
 
