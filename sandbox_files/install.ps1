@@ -278,7 +278,7 @@ Write-Progress -Activity "Installation Progress" -Status "Checking VirtualBrowse
 Write-Host "[2.5/4] 🌐 检查 VirtualBrowser..." -ForegroundColor Yellow
 "[2.5/4] 检查 VirtualBrowser" | Add-Content -Path $logPath -Encoding UTF8 -ErrorAction SilentlyContinue
 
-$vbInstallPath = "C:\Program"
+$vbInstallPath = "C:\VirtualBrowser"
 $vbExePath = "$vbInstallPath\VirtualBrowser.exe"
 
 # 检查 VirtualBrowser 是否已安装（固化）
@@ -309,7 +309,7 @@ if (Test-Path $vbExePath) {
             Write-Host ""
             Write-Host "💡 VirtualBrowser 可以稍后手动安装：" -ForegroundColor Yellow
             Write-Host "   1. 访问 VirtualBrowser 官网下载安装包" -ForegroundColor Gray
-            Write-Host "   2. 安装到 C:\Program\" -ForegroundColor Gray
+            Write-Host "   2. 安装到 C:\VirtualBrowser\" -ForegroundColor Gray
             Write-Host "   3. 下次运行沙盒时会自动使用固化的 VirtualBrowser" -ForegroundColor Gray
             Write-Host ""
             Write-Host "⚠️ 跳过 VirtualBrowser 安装，继续..." -ForegroundColor Yellow
