@@ -1742,31 +1742,38 @@ function Apply-Account($account) {
     # 备份并清空 AWS SSO Cache
     $awsSsoCacheDir = "$env:USERPROFILE\.aws\sso\cache"
 
-    if (Test-Path $awsSsoCacheDir) {
-        $awsSsoJsonFiles = Get-ChildItem -Path $awsSsoCacheDir -Filter "*.json" -ErrorAction SilentlyContinue
-        if ($awsSsoJsonFiles.Count -gt 0) {
-            Write-Host "正在备份 AWS SSO Cache 中的 $($awsSsoJsonFiles.Count) 个 JSON 文件..." -ForegroundColor Yellow
-
-            $timestamp = Get-Date -Format 'yyyyMMdd_HHmmss'
-            $backupZipPath = "$awsSsoCacheDir\aws_sso_backup_$timestamp.zip"
-
-            try {
-                $awsSsoJsonFiles | Compress-Archive -DestinationPath $backupZipPath -Force
-                Write-Host "AWS SSO Cache 备份完成: $backupZipPath" -ForegroundColor Green
-
-                # 删除原始JSON文件
-                foreach ($file in $awsSsoJsonFiles) {
-                    Remove-Item -Path $file.FullName -Force
-                    Write-Host "已删除 AWS SSO Cache 文件: $($file.Name)" -ForegroundColor Cyan
-                }
-            } catch {
-                Write-Host "备份 AWS SSO Cache 文件失败: $($_.Exception.Message)" -ForegroundColor Red
-                return
-            }
+    # 确保目录存在（包括父目录）
+    if (-not (Test-Path $awsSsoCacheDir)) {
+        try {
+            New-Item -ItemType Directory -Path $awsSsoCacheDir -Force | Out-Null
+            Write-Host "已创建 AWS SSO Cache 目录: $awsSsoCacheDir" -ForegroundColor Yellow
+        } catch {
+            Write-Host "创建 AWS SSO Cache 目录失败: $($_.Exception.Message)" -ForegroundColor Red
+            return
         }
-    } else {
-        New-Item -ItemType Directory -Path $awsSsoCacheDir -Force -Recurse | Out-Null
-        Write-Host "已创建 AWS SSO Cache 目录: $awsSsoCacheDir" -ForegroundColor Yellow
+    }
+
+    # 备份现有的 JSON 文件
+    $awsSsoJsonFiles = Get-ChildItem -Path $awsSsoCacheDir -Filter "*.json" -ErrorAction SilentlyContinue
+    if ($awsSsoJsonFiles.Count -gt 0) {
+        Write-Host "正在备份 AWS SSO Cache 中的 $($awsSsoJsonFiles.Count) 个 JSON 文件..." -ForegroundColor Yellow
+
+        $timestamp = Get-Date -Format 'yyyyMMdd_HHmmss'
+        $backupZipPath = "$awsSsoCacheDir\aws_sso_backup_$timestamp.zip"
+
+        try {
+            $awsSsoJsonFiles | Compress-Archive -DestinationPath $backupZipPath -Force
+            Write-Host "AWS SSO Cache 备份完成: $backupZipPath" -ForegroundColor Green
+
+            # 删除原始JSON文件
+            foreach ($file in $awsSsoJsonFiles) {
+                Remove-Item -Path $file.FullName -Force
+                Write-Host "已删除 AWS SSO Cache 文件: $($file.Name)" -ForegroundColor Cyan
+            }
+        } catch {
+            Write-Host "备份 AWS SSO Cache 文件失败: $($_.Exception.Message)" -ForegroundColor Red
+            return
+        }
     }
 
     # 复制选中的账号文件到 AWS SSO Cache 并恢复原始文件名
