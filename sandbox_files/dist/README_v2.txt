@@ -7,10 +7,12 @@
 - ✅ Password generation: Simplified to use only +.> special characters
 - ✅ File formatting: Proper line breaks in account.txt
 - ✅ Email service: Fully integrated into EXE
+- ✅ Custom email and password: Added customization dialog
 
 ### Features
 - Generate registration info (email, username, password, name)
-- Receive verification codes from AWS, GitHub, Google
+- Customize email and password before confirming
+- Receive verification codes from AWS, GitHub, Google, etc.
 - Save account info to C:/sandbox_files/account.txt
 - Manage OAuth files in C:/sandbox_files/OAuth/
 
@@ -18,9 +20,11 @@
 
 ### Quick Start
 1. Run RegistrationInfoGenerator_v2.exe
-2. Click "Generate Registration Info"
-3. Copy the generated information as needed
-4. Use "Get Verification Code" for email verification
+2. Click "🎲 生成新的注册信息"
+3. Click on any field to copy to clipboard
+4. After copying password and any other field, "✏️ 自定义" button becomes available
+5. Click "✏️ 自定义" to customize email and password (optional)
+6. Click "✅ 确认注册成功" to save account info
 
 ### File Locations
 - Account info: C:/sandbox_files/account.txt
@@ -28,19 +32,15 @@
 - Program will create directories automatically
 
 ### Password Format
-- Length: 6-8 characters
+- Length: 9 characters
 - Contains: letters, numbers, and simple symbols (+.>)
-- Example: Abc123+, Def456., Ghi789>
+- Example: Abc123+De, Fgh456.Ij
 
 ### Email Service Configuration
 If you want to use email verification features, ensure your .env file contains:
 ```
-[EMAIL]
-IMAP_SERVER=your.imap.server
-IMAP_PORT=993
-IMAP_USER=your@email.com
-IMAP_PASS=your_password
-IMAP_USE_SSL=true
+EMAIL_DOMAIN=kt167.cc
+SMS_WEBSITE=https://sms-activate.org/
 ```
 
 ## Requirements
@@ -53,5 +53,5 @@ IMAP_USE_SSL=true
 - If email service fails, verify .env configuration
 - For any issues, check the console output for error messages
 
-Built with PyInstaller 6.16.0
-Generated on: 2025-11-06 22:54:46
+Built with PyInstaller 6.5.0
+Generated on: 2025-04-25
