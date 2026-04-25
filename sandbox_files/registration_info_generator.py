@@ -321,6 +321,12 @@ class RegistrationInfoGenerator:
         spacer = ttk.Label(tools_frame, text="")
         spacer.pack(pady=2)
 
+        # 自定义按钮
+        self.custom_btn = ttk.Button(tools_frame, text="✏️ 自定义",
+                               command=self.show_custom_dialog,
+                               state='disabled')
+        self.custom_btn.pack(pady=1)
+
         # 注册成功确认按钮
         self.confirm_btn = ttk.Button(tools_frame, text="✅ 确认注册成功",
                                command=self.confirm_registration_success,
@@ -490,7 +496,9 @@ class RegistrationInfoGenerator:
 
             if password_copied and other_field_copied:
                 self.confirm_btn.config(state='normal')
+                self.custom_btn.config(state='normal')  # 同时启用自定义按钮
                 print("[INFO] ✅ 确认注册成功按钮已启用")
+                print("[INFO] ✅ 自定义按钮已启用")
                 self.status_var.set("✅ 可以点击确认注册成功了")
                 self.root.after(3000, lambda: self.status_var.set("就绪 - 点击任意信息行复制到剪贴板"))
 
@@ -505,7 +513,9 @@ class RegistrationInfoGenerator:
         }
         if hasattr(self, 'confirm_btn'):
             self.confirm_btn.config(state='disabled')
-        print("[INFO] 复制计数器已重置，确认按钮已禁用")
+        if hasattr(self, 'custom_btn'):
+            self.custom_btn.config(state='disabled')
+        print("[INFO] 复制计数器已重置，确认按钮和自定义按钮已禁用")
 
     def generate_initial_info(self):
         """初始化时生成注册信息"""
@@ -835,6 +845,114 @@ class RegistrationInfoGenerator:
         except Exception as e:
             print(f"❌ 确认注册成功失败: {e}")
             messagebox.showerror("错误", f"操作失败: {e}")
+
+    def show_custom_dialog(self):
+        """显示自定义邮箱和密码对话框"""
+        try:
+            if not self.user_data:
+                messagebox.showwarning("警告", "没有可自定义的注册信息，请先生成信息")
+                return
+
+            # 创建对话框窗口
+            dialog = tk.Toplevel(self.root)
+            dialog.title("自定义注册信息")
+            dialog.geometry("450x250")
+            dialog.resizable(False, False)
+            dialog.transient(self.root)
+            dialog.grab_set()
+
+            # 主框架
+            main_frame = ttk.Frame(dialog, padding="20")
+            main_frame.pack(fill=tk.BOTH, expand=True)
+
+            # 标题
+            title_label = ttk.Label(main_frame, text="✏️ 自定义邮箱和密码",
+                                   font=('Arial', 14, 'bold'))
+            title_label.pack(pady=(0, 15))
+
+            # 邮箱输入框
+            email_frame = ttk.Frame(main_frame)
+            email_frame.pack(pady=10, fill=tk.X)
+
+            email_label = ttk.Label(email_frame, text="邮箱:",
+                                   font=('Arial', 10), width=8)
+            email_label.pack(side=tk.LEFT, padx=(0, 10))
+
+            email_var = tk.StringVar(value=self.user_data.get('email', ''))
+            email_entry = ttk.Entry(email_frame, textvariable=email_var,
+                                   font=('Arial', 10))
+            email_entry.pack(side=tk.LEFT, fill=tk.X, expand=True)
+
+            # 密码输入框
+            password_frame = ttk.Frame(main_frame)
+            password_frame.pack(pady=10, fill=tk.X)
+
+            password_label = ttk.Label(password_frame, text="密码:",
+                                      font=('Arial', 10), width=8)
+            password_label.pack(side=tk.LEFT, padx=(0, 10))
+
+            password_var = tk.StringVar(value=self.user_data.get('password', ''))
+            password_entry = ttk.Entry(password_frame, textvariable=password_var,
+                                      font=('Arial', 10))
+            password_entry.pack(side=tk.LEFT, fill=tk.X, expand=True)
+
+            # 提示信息
+            hint_label = ttk.Label(main_frame,
+                                  text="(修改后将覆盖原有的邮箱和密码)",
+                                  font=('Arial', 8), foreground='gray')
+            hint_label.pack(pady=(0, 15))
+
+            # 按钮框架
+            button_frame = ttk.Frame(main_frame)
+            button_frame.pack(pady=10)
+
+            def on_confirm():
+                new_email = email_var.get().strip()
+                new_password = password_var.get().strip()
+
+                if not new_email:
+                    messagebox.showwarning("警告", "邮箱不能为空", parent=dialog)
+                    return
+
+                if not new_password:
+                    messagebox.showwarning("警告", "密码不能为空", parent=dialog)
+                    return
+
+                # 更新用户数据
+                self.user_data['email'] = new_email
+                self.user_data['password'] = new_password
+
+                # 更新界面显示
+                self.update_info_display()
+
+                dialog.destroy()
+
+                self.status_var.set("✅ 邮箱和密码已自定义")
+                print(f"[INFO] 邮箱已自定义为: {new_email}")
+                print(f"[INFO] 密码已自定义为: {new_password}")
+
+                messagebox.showinfo("成功", "邮箱和密码已成功自定义！", parent=self.root)
+
+            def on_cancel():
+                dialog.destroy()
+
+            confirm_btn = ttk.Button(button_frame, text="确认",
+                                    command=on_confirm, width=12)
+            confirm_btn.pack(side=tk.LEFT, padx=5)
+
+            cancel_btn = ttk.Button(button_frame, text="取消",
+                                   command=on_cancel, width=12)
+            cancel_btn.pack(side=tk.LEFT, padx=5)
+
+            # 居中显示
+            dialog.update_idletasks()
+            x = self.root.winfo_x() + (self.root.winfo_width() - dialog.winfo_width()) // 2
+            y = self.root.winfo_y() + (self.root.winfo_height() - dialog.winfo_height()) // 2
+            dialog.geometry(f"+{x}+{y}")
+
+        except Exception as e:
+            print(f"❌ 显示自定义对话框失败: {e}")
+            messagebox.showerror("错误", f"显示对话框失败: {e}")
 
     def show_platform_dialog(self, default_platform_name, default_platform_key):
         """显示平台确认对话框"""
